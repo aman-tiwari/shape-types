@@ -6,6 +6,9 @@
   "dependencies": {
     "typescript": "^3.0.0-dev.20180712"
   },
+  "scripts": {
+    "build": "yarn run ts-node gen_type.ts 2> lut_types.ts"
+  },
   "devDependencies": {
     "ts-node-dev": "^1.0.0-pre.26"
   }
