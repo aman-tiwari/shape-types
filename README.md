@@ -6,7 +6,7 @@ how much math can u do in a type system?
 
 `gen_types.ts` generates the types.
 
-Looking `index.ts` for how to use.
+Look at `index.ts` for how to use.
 
 TODO:
 
