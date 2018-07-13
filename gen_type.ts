@@ -1,7 +1,8 @@
 const LT_SIZE = 10;
-const NUM_SIZE = 5;
+const NUM_SIZE = 4;
+const NUM_LITERALS = 1024;
 
-const iota = n => new Array(n).fill(undefined);
+const iota = n => new Array(n).fill(undefined).map((_, i) => i);
 
 const UnwrapT = `Unwrap${NUM_SIZE}`
 const UnwrapStr = `type ${UnwrapT}<X extends LUTValue[]> =
@@ -60,11 +61,11 @@ const NumberStr = `[${iota(NUM_SIZE).map(() => 'LUTIndex').join(',')}]`
 const AdderT = `Add${NUM_SIZE}_`
 
 const AdderStr = `type ${AdderT}<X extends Number, Y extends Number> = 
-    [${iota(NUM_SIZE).map((_, i) => `AddLUT[X[${i}]][Y[${i}]]`).toString()}]`
+    [${iota(NUM_SIZE).map(i => `AddLUT[X[${i}]][Y[${i}]]`).toString()}]`
 
 const PropCarryIterT = `PropCarry${NUM_SIZE}Iter`
 const PropCarryIterStr = `type ${PropCarryIterT}<X extends LUTValue[]> =
-    [${iota(NUM_SIZE).map((_, i) => {
+    [${iota(NUM_SIZE).map(i => {
         if(i === NUM_SIZE - 1) return `{v: X[${i - 1}]['v'], c: 0}`
         else return `AddLUT[X[${i + 1}]['c']][X[${i}]['v']]`
     })}]` 
@@ -85,12 +86,12 @@ const AddStr = `type ${AddT}<X extends Number, Y extends Number> =
 const SubberT = `Sub${NUM_SIZE}_`
 
 const SubberStr = `type ${SubberT} <X extends Number, Y extends Number> = 
-[${iota(NUM_SIZE).map((_, i) => `SubLUT[X[${i}]][Y[${i}]]`).toString()}]
+[${iota(NUM_SIZE).map(i => `SubLUT[X[${i}]][Y[${i}]]`).toString()}]
 `
 
 const PropBorrowIterT = `PropBorrow${NUM_SIZE}Iter`
 const PropBorrowIterStr = `type ${PropBorrowIterT}<X extends LUTValue[]> =
-    [${iota(NUM_SIZE).map((_, i) => {
+    [${iota(NUM_SIZE).map(i => {
         if(i === NUM_SIZE - 1) return `{v: X[${i - 1}]['v'], c: 0}`
         else return `SubLUT[X[${i}]['v']][X[${i + 1}]['c']]`
     })}]` 
@@ -106,8 +107,13 @@ const SubT = `Sub${NUM_SIZE}`
 const SubStr = `type ${SubT}<X extends Number, Y extends Number> = 
     ${UnwrapT}<${PropBorrowT}<${SubberT}<X, Y>>>`
 
-const LUTIndexStr = `${iota(LT_SIZE).map((_, i) => i).join(' | ')}`
-const StrLUTIndexStr = `${iota(LT_SIZE).map((_, i) => `"${i}"`).join(' | ')}`
+const LUTIndexStr = `${iota(LT_SIZE).join(' | ')}`
+const StrLUTIndexStr = `${iota(LT_SIZE).map(i => `"${i}"`).join(' | ')}`
+
+
+const zpad = (x, s) => iota(s - x.toString().length).map(() => '0').join('') + x.toString()
+
+const LiteralLUT = `[${iota(NUM_LITERALS).map(i => `[${zpad(i, NUM_SIZE).split('').toString()}]`).toString()}]`
 
 const emit = `
 export type Number = ${NumberStr};
@@ -141,6 +147,8 @@ export ${PropBorrowIterStr};
 export ${PropBorrowStr};
 
 export ${UnwrapStr};
+
+export type Literal = ${LiteralLUT};
 
 `
 

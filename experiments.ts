@@ -1,5 +1,5 @@
 
-import { Sub4_, SubLUT, AddLUT, LUTIndex, StrLUTIndex, LUTValue } from './lut_types';
+import { Number, Sub4_, SubLUT, AddLUT, LUTIndex, StrLUTIndex, LUTValue } from './lut_types';
 
 type AddN<Num1 extends any[], Num2 extends any[]> = {
     [K in (keyof Num2 & keyof Num1)]: Num1[K] extends LUTIndex 
@@ -10,6 +10,16 @@ type AddN<Num1 extends any[], Num2 extends any[]> = {
 type p = AddN<[1, 2, 3, 8], [3, 4, 5, 9]>;
 
 console.error(emit);
+
+type Shape = Number[];
+
+type Shape4 = [Number, Number, Number, Number]
+
+type Tensor<S extends Shape> = { shape: S, v: 'ok' }
+
+function doSomething<S extends Shape>(t: Tensor<S>): Tensor<[Add<S[0], [0, 0, 0, 1]>]> {
+    
+}
 
 type A = AddLUT;
 type S = SubLUT;
@@ -40,9 +50,11 @@ type PropBorrow4Iter<X extends LUTValue[]> =
 
 type PropBorrow4<X extends LUTValue[]> = PropBorrow4Iter<PropBorrow4Iter<PropBorrow4Iter<PropBorrow4Iter<X>>>>
 
+
+
 type _6 = SubLUT[8][2]
 
-type _9 = PropBorrow4<Sub4_<[0, 0, 1, 4], [0, 0, 0, 5]>>;
+type _9 = Unwrap4<PropBorrow4<Sub4_<[0, 0, 1, 4], [0, 0, 0, 5]>>>;
 
 type Add4<X extends LUTIndex[], Y extends LUTIndex[]> = 
     Unwrap4<PropCarry4<Add4_<X, Y>>>
