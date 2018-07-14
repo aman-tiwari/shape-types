@@ -1,6 +1,6 @@
 # shape-types
 
-how much math can u do in a type system?
+how much math can u do using just types?
 
 (Re)generate the lookup tables & add/subtract "type functions" with `yarn run build`
 
