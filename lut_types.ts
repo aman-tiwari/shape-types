@@ -48,7 +48,7 @@ export type Add4<X extends Number, Y extends Number> =
 ;
 
 export type PropCarry4Iter<X extends LUTValue[]> =
-    [AddLUT[X[1]['c']][X[0]['v']],AddLUT[X[2]['c']][X[1]['v']],AddLUT[X[3]['c']][X[2]['v']],{v: X[2]['v'], c: 0}];
+    [AddLUT[X[1]['c']][X[0]['v']],AddLUT[X[2]['c']][X[1]['v']],AddLUT[X[3]['c']][X[2]['v']],{v: X[3]['v'], c: 0}];
 
 export type PropCarry4<X extends LUTValue[]> =
     PropCarry4Iter<PropCarry4Iter<PropCarry4Iter<PropCarry4Iter<X>>>>;
@@ -61,10 +61,23 @@ export type Sub4<X extends Number, Y extends Number> =
     Unwrap4<PropBorrow4<Sub4_<X, Y>>>;
 
 export type PropBorrow4Iter<X extends LUTValue[]> =
-    [SubLUT[X[0]['v']][X[1]['c']],SubLUT[X[1]['v']][X[2]['c']],SubLUT[X[2]['v']][X[3]['c']],{v: X[2]['v'], c: 0}];
+    [SubLUT[X[0]['v']][X[1]['c']],SubLUT[X[1]['v']][X[2]['c']],SubLUT[X[2]['v']][X[3]['c']],{v: X[3]['v'], c: 0}];
 
 export type PropBorrow4<X extends LUTValue[]> =
     PropBorrow4Iter<PropBorrow4Iter<PropBorrow4Iter<PropBorrow4Iter<X>>>>;
+
+export 
+type GT1<X extends LUTIndex, Y extends LUTIndex> =
+    SubLUT[Y][X]['c'] extends 1 ? 1 : 0;
+
+type GT4_<R extends LUTValue[]> =
+    GT1<R[0]['c'], 0> extends 1 ? 1 : GT1<R[1]['c'], 0> extends 1 ? 1 : GT1<R[2]['c'], 0> extends 1 ? 1 : GT1<R[3]['c'], R[2]['v']> extends 1 ? 1 : 0;;
+
+export type GreaterThan4<Y extends Number, X extends Number> =
+    GT4_<Sub4_<X, Y>>;
+
+export type Not<X> =
+    X extends 0 ? 1 : 0
 
 export type Unwrap4<X extends LUTValue[]> =
     [X[0]['v'],X[1]['v'],X[2]['v'],X[3]['v']];

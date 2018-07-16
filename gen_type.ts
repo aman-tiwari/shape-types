@@ -66,7 +66,7 @@ const AdderStr = `type ${AdderT}<X extends Number, Y extends Number> =
 const PropCarryIterT = `PropCarry${NUM_SIZE}Iter`
 const PropCarryIterStr = `type ${PropCarryIterT}<X extends LUTValue[]> =
     [${iota(NUM_SIZE).map(i => {
-        if(i === NUM_SIZE - 1) return `{v: X[${i - 1}]['v'], c: 0}`
+        if(i === NUM_SIZE - 1) return `{v: X[${i}]['v'], c: 0}`
         else return `AddLUT[X[${i + 1}]['c']][X[${i}]['v']]`
     })}]` 
 
@@ -92,7 +92,7 @@ const SubberStr = `type ${SubberT} <X extends Number, Y extends Number> =
 const PropBorrowIterT = `PropBorrow${NUM_SIZE}Iter`
 const PropBorrowIterStr = `type ${PropBorrowIterT}<X extends LUTValue[]> =
     [${iota(NUM_SIZE).map(i => {
-        if(i === NUM_SIZE - 1) return `{v: X[${i - 1}]['v'], c: 0}`
+        if(i === NUM_SIZE - 1) return `{v: X[${i}]['v'], c: 0}`
         else return `SubLUT[X[${i}]['v']][X[${i + 1}]['c']]`
     })}]` 
 
@@ -110,6 +110,25 @@ const SubStr = `type ${SubT}<X extends Number, Y extends Number> =
 const LUTIndexStr = `${iota(LT_SIZE).join(' | ')}`
 const StrLUTIndexStr = `${iota(LT_SIZE).map(i => `"${i}"`).join(' | ')}`
 
+
+const GTHelperT = `GT${NUM_SIZE}_`
+const GTHelperStr = `
+type GT1<X extends LUTIndex, Y extends LUTIndex> =
+    SubLUT[Y][X]['c'] extends 1 ? 1 : 0;
+
+type ${GTHelperT}<R extends LUTValue[]> =
+    ${iota(NUM_SIZE).map(i => {
+        if(i === NUM_SIZE - 1) return `GT1<R[3]['c'], R[2]['v']> extends 1 ? 1 : 0;`
+        else return `GT1<R[${i}]['c'], 0> extends 1 ? 1 : `
+    }).join('')}`
+
+const GreaterThanT = `GreaterThan${NUM_SIZE}`
+const GreaterThanStr = `type ${GreaterThanT}<Y extends Number, X extends Number> =
+    ${GTHelperT}<${SubberT}<X, Y>>`
+
+const NotT = `Not`
+const NotStr = `type ${NotT}<X> =
+    X extends 0 ? 1 : 0`
 
 const zpad = (x, s) => iota(s - x.toString().length).map(() => '0').join('') + x.toString()
 
@@ -145,6 +164,12 @@ export ${SubStr};
 export ${PropBorrowIterStr};
 
 export ${PropBorrowStr};
+
+export ${GTHelperStr};
+
+export ${GreaterThanStr};
+
+export ${NotStr}
 
 export ${UnwrapStr};
 
