@@ -50,6 +50,9 @@ type PropBorrow4Iter<X extends LUTValue[]> =
 
 type PropBorrow4<X extends LUTValue[]> = PropBorrow4Iter<PropBorrow4Iter<PropBorrow4Iter<PropBorrow4Iter<X>>>>
 
+import { AddLUT } from './lut_types1024'
+
+type _vv = AddL
 
 
 type _6 = SubLUT[8][2]
@@ -69,24 +72,26 @@ type _9999 = Add4<_1000, _8999>
 type _overflow = Add4<_9999, [0, 0, 0, 1]>
 
 type GT1<X extends LUTIndex, Y extends LUTIndex> =
-    SubLUT[X][Y]['c'] extends 1 ? 0 : 1;
+    SubLUT[Y][X]['c'] extends 1 ? 1 : 0;
 
+type ppp = GT1<3, 2>
 
 type GT_<R extends LUTValue[]> =
     GT1<R[0]['c'], 0> extends 1 ? 1
     : GT1<R[1]['c'], R[0]['v']> extends 1 ? 1
     : GT1<R[2]['c'], R[1]['v']> extends 1 ? 1
-    : GT1<R[3]['c'], R[2]['v']> extends 1 ? 1
-    : 0;
+    : GT1<R[3]['c'], R[2]['v']> extends 1 ? 1 : 0;
 
 type GT<X extends Number, Y extends Number> =
-    GT_<Sub4_<X, Y>>    
+    GT_<Sub4_<Y, X>>    
 
 
 type pp = GT<Literal[100], Literal[10]>
 
-type lll = Sub4<[0, 0, 0, 9], [0, 0, 0, 8]>
+type lll = GT<[0, 0, 0, 9], [0, 0, 0, 8]>
+type lllll_ = Sub4_<[0, 0, 0, 9], [0, 0, 1, 0]>
 type lllll = GT<[0, 0, 0, 9], [0, 0, 1, 0]>
+type llllll = GT<[0, 1, 0, 0], [0, 1, 0, 0]>
 // tail recur experiments
 
 

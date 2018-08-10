@@ -650,9 +650,9 @@ tsconfig@^7.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
-typescript@^3.0.0-dev.20180712:
-  version "3.0.0-dev.20180712"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.0-dev.20180712.tgz#ffdadf6a5a108c44d5325e83e2afbd088f2a5f84"
+typescript@^3.1.0-dev.20180717:
+  version "3.1.0-dev.20180717"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.0-dev.20180717.tgz#a623e4df35ee102641020b1fe9dd5258547be74a"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.3"

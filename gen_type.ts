@@ -1,6 +1,6 @@
-const LT_SIZE = 10;
-const NUM_SIZE = 4;
-const NUM_LITERALS = 1024;
+const LT_SIZE = 32;
+const NUM_SIZE = 2;
+const MAX_LITERAL = 1024;
 
 const iota = n => new Array(n).fill(undefined).map((_, i) => i);
 
@@ -46,7 +46,7 @@ for(let i = 0; i < LT_SIZE; i++) {
     for(let j = 0; j < LT_SIZE; j++) {
         const realValue = i - j;
 
-        const value = realValue < 0 ? i + 10 - j : realValue;
+        const value = realValue < 0 ? i + LT_SIZE - j : realValue;
         const borrow = realValue < 0 ? 1 : 0;
         subLUT[i][j] = `/* ${i} - ${j} */ {v:${value},c:${borrow}}`
     }
@@ -132,7 +132,42 @@ const NotStr = `type ${NotT}<X> =
 
 const zpad = (x, s) => iota(s - x.toString().length).map(() => '0').join('') + x.toString()
 
-const LiteralLUT = `[${iota(NUM_LITERALS).map(i => `[${zpad(i, NUM_SIZE).split('').toString()}]`).toString()}]`
+const digitsNeeded = Math.ceil(Math.log(MAX_LITERAL)/Math.log(LT_SIZE));
+
+function toBase(x: number, b: number) {
+    const digits = x.toString(b).split('').map(d => parseInt(d, b));
+    return iota(NUM_SIZE - digits.length).fill(0).concat(digits);
+}
+
+const LiteralLUT = iota(MAX_LITERAL).map(i => '[' + toBase(i, LT_SIZE).toString() + ']');
+
+// `[${iota(NUM_LITERALS).map(i => `[${zpad(i, NUM_SIZE).split('').toString()}]`).toString()}]`
+
+const ReverseLUT = []
+
+function recursiveToString(arr) {
+    if(Array.isArray(arr)) return `[${arr.map(x => recursiveToString(x)).toString()}]`
+    else return arr.toString();
+}
+
+/*
+for(let i = 0; i < NUM_LITERALS; i++) {
+    const digits = zpad(i, NUM_SIZE).split('').map(x => parseInt(x, 10));
+    let arr = ReverseLUT;
+    for(const digit of digits.slice(0, digits.length - 1)) {
+        if(arr[digit] == null) {
+            arr[digit] = [];
+        }
+        arr = arr[digit];
+    }
+    (arr as any)[digits[digits.length - 1]] = i;
+}
+*/
+const ReverseLUTStr = recursiveToString(ReverseLUT)
+
+const ToLiteralT = `ToLiteral`
+
+const ToLiteralStr = `type ${ToLiteralT} = any` //`type ${ToLiteralT}<X extends Number> = ReverseLUT${iota(NUM_SIZE).map(i => `[X[${i}]]`).join('')}`
 
 const emit = `
 export type Number = ${NumberStr};
@@ -173,7 +208,11 @@ export ${NotStr}
 
 export ${UnwrapStr};
 
-export type Literal = ${LiteralLUT};
+export type Literal = [${LiteralLUT.toString()}];
+
+export type ReverseLUT = ${ReverseLUTStr};
+
+export ${ToLiteralStr};
 
 `
 
